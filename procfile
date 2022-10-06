@@ -1,1 +1,1 @@
-web: gunicorn boxes.wsgi --log-file -
+web: gunicorn spinny-project.wsgi --log-file -
