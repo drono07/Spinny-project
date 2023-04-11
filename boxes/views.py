@@ -28,7 +28,7 @@ from constance import config
 from boxes.validations import BoxUpsertValidations
 from .validation import check_validity
 from rest_framework.parsers import JSONParser
-import bdb
+import bdb, json
 from django.http import HttpResponse
 
 class HomeView(APIView):
@@ -37,12 +37,15 @@ class HomeView(APIView):
     def get(self, request, *args, **kwargs):
         return HttpResponse("Here's the Home of the web page.")
 
+
 class CreateBoxView(APIView):
     permission_classes = [IsAuthenticated,]
     def post(self, request, *args, **kwargs):
         user= request.user
+        print("request",request)
+        
         is_valid_user=BoxUpsertValidations.validate_create_box(user)
-        if is_valid_user & check_validity(request.user):
+        if is_valid_user & check_validity(user):
             length = int(request.data.get('length'))
             breadth = int(request.data.get('breadth'))
             height = int(request.data.get('height'))
@@ -70,10 +73,14 @@ class MyBoxListView(generics.ListAPIView):
         return Boxes.objects.filter(created_by=request.user)
 
     def get(self, request, *args, **kwargs):
+        # print("reqyest",request)
+        # print("user",request.user)
         is_staff_user = BoxUpsertValidations.validate_my_box_list_request(request.user)
         if not is_staff_user:
             return Response("not a staff member")
+
         queryset = self.queryset(request=request)
+        # print("qs",queryset)
         filtered_queryset = self.filter_queryset(queryset)
         data = self.serializer_class(filtered_queryset, many=True).data
         return Response(data)
@@ -85,6 +92,7 @@ class BoxDeleteView(APIView):
         id = kwargs.get("pk")
         box=Boxes.objects.filter(id=id)
         is_user_valid=BoxUpsertValidations.validate_delete_box(user=request.user,box=box)
+        # print("is_user",is_user_valid)
         if is_user_valid:
             box.delete()
             data = dict()
@@ -108,9 +116,9 @@ class BoxUpdates(APIView):
                 box.breadth=breadth
             if height:
                 box.height =height
-                area,vol = BoxUtils.calculate_area_volume(length=box.length, breadth=box.breadth, height=box.height)
-                box.area=area
-                box.volume=vol
+                # area,vol = BoxUtils.calculate_area_volume(length=box.length, breadth=box.breadth, height=box.height)
+                # box.area=area
+                # box.volume=vol
                 box.save()
                 return Response("Succesfully Updated")
         return response("User is not staff member")
