@@ -6,8 +6,8 @@ from .models import Boxes
 
 
 class BoxesAdmin(admin.ModelAdmin):
-    list_display = ['length', 'breadth','height','created_by']
-    search_fields =['length', 'breadth','height','created_by']
+    list_display = ['length', 'breadth','height','created_by','area','volume']
+    search_fields =['length', 'breadth','height','created_by','area','volume']
 
 
 admin.site.register(Boxes, BoxesAdmin)
