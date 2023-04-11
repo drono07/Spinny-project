@@ -9,6 +9,7 @@
     "password":"dhruv"
 }'
 --Response : Token Generated 234801022f6bb26fb2f4b424b37555bc5213c571
+
 </code></pre>
 
 ## 2. Box Creation API
