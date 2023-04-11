@@ -7,9 +7,22 @@ class Boxes(models.Model):
     length=models.IntegerField()
     breadth=models.IntegerField()
     height=models.IntegerField()
-    area=models.IntegerField()
-    volume=models.IntegerField()
+    area=models.IntegerField(null=True,blank=True)
+    volume=models.IntegerField(null=True,blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by=models.CharField(max_length=10)
 
+    def save(self, *args, **kwargs):
+        self.area, self.volume = self.calculate_area_volume()
+        super().save(*args, **kwargs)
+
+    def calculate_area_volume(self):
+        l = int(self.length)
+        b = int(self.breadth)
+        h = int(self.height)
+
+        area = 2 * (l * b + b * h + l * h)
+        volume =  l* b * h
+    
+        return area, volume
