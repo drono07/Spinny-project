@@ -26,3 +26,20 @@ class Boxes(models.Model):
         volume =  l* b * h
     
         return area, volume
+
+class Config(models.Model):
+    average_area = models.IntegerField(default=100)
+    average_volume = models.IntegerField(default=1000)
+    total_boxes = models.IntegerField(default=100)
+    total_boxes_user = models.IntegerField(default=50)
+    active = models.BooleanField(default= True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    # def save(self, *args, **kwargs):
+    #     self.objects.filter(active = True).update(active =False)
+    #     super().save(*args, **kwargs)
+
+
+
+
