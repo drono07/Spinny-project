@@ -10,7 +10,7 @@ class BoxUtils:
             length=length,
             breadth=breadth,
             height=height,
-            created_by=user
+            created_by=str(user)
         )
         box.save()
         return box,"Success"
