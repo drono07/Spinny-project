@@ -45,7 +45,9 @@ INSTALLED_APPS = [
     'boxes',
     'django_filters',
     'rest_framework',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken' ,
+#     'constance.backends.database',
+#     'constance'
 ]
 
 MIDDLEWARE = [
