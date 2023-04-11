@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-**ktv@t5mqaspmfddplc++6_)95$!r24*p0fsgopjrudrp6g&(
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-ALLOWED_HOSTS = ['my-spinny-app.herokuapp.com','spinny-services.onrender.com']
+ALLOWED_HOSTS = ['*']
 
 A1 = 100
 V1 = 1000
