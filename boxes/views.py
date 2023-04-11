@@ -29,6 +29,13 @@ from boxes.validations import BoxUpsertValidations
 from .validation import check_validity
 from rest_framework.parsers import JSONParser
 import bdb
+from django.http import HttpResponse
+
+class HomeView(APIView):
+    permission_classes = []
+    authentication_classes = []
+    def get(self, request, *args, **kwargs):
+        return HttpResponse("Here's the Home of the web page.")
 
 class CreateBoxView(APIView):
     permission_classes = [IsAuthenticated,]

@@ -18,11 +18,13 @@ from django.urls import path
 from django.conf.urls import include,url
 from django.views.static import serve
 from django.conf import settings
+from boxes import views
 
 urlpatterns = [
+    path('',views.HomeView.as_view(),name='home'),
     path('admin/', admin.site.urls),
     path('boxes/', include('boxes.urls')),
-    url(r'^media/(?P<path>.*)$', serve,{'document_root':       settings.MEDIA_ROOT}), 
+    url(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}), 
     url(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}), 
 ]
 
