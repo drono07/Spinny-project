@@ -10,7 +10,6 @@ djangorestframework==3.13.1
 ipython==7.16.3
 ipython-genutils==0.2.0
 jedi==0.17.2
-mysqlclient==2.1.1
 parso==0.7.1
 pexpect==4.8.0
 pickleshare==0.7.5
