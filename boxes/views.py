@@ -92,11 +92,10 @@ class BoxDeleteView(APIView):
         id = kwargs.get("pk")
         box=Boxes.objects.filter(id=id)
         is_user_valid=BoxUpsertValidations.validate_delete_box(user=request.user,box=box)
-        # print("is_user",is_user_valid)
+        print("is_user",is_user_valid)
         if is_user_valid:
             box.delete()
-            data = dict()
-            data["reason"] = "Box Deleted"
+            return Response("Box Deleted")
         return Response("Only Box Creater can delete")
 
 class BoxUpdates(APIView):
