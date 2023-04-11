@@ -11,12 +11,12 @@ class BoxUpsertValidations:
         return cls.validate_create_box(user=user)
 
     @classmethod
-    def validate_my_box_list_request(cls, user, request_data):
+    def validate_my_box_list_request(cls, user):
         return cls.validate_create_box(user=user)
 
     @classmethod
     def validate_delete_box(cls, user,box):
-        if box.created_by == user:
+        if box.first().created_by == str(user):
             return True
         return False
 
