@@ -12,7 +12,13 @@ class AdminBoxSerializer(serializers.ModelSerializer):
         fields = ['id','length','breadth','height','area','volume','created_by','created_at','updated_at']
 
 
-class BoxesSerializer(serializers.ModelSerializer):
+class StaffBoxesSerializer(serializers.ModelSerializer):
     class Meta:
         model=Boxes
-        fields='__all__'
+        fields=['length','breadth','height','area','volume','created_by','updated_at']
+
+class BoxesSerializer(StaffBoxesSerializer):
+    class Meta:
+        model = Boxes
+        fields=['length','breadth','height','area','volume']
+

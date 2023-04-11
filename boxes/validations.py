@@ -16,7 +16,6 @@ class BoxUpsertValidations:
 
     @classmethod
     def validate_delete_box(cls, user,box):
-        if box.first().created_by == str(user):
+        if box.created_by == user.username:
             return True
         return False
-

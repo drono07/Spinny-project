@@ -1,12 +1,21 @@
 import bdb
-from .models import Boxes
+from .models import Boxes, Config
 from django.db.models import Avg
-from spinny_project.settings import A1 , V1 , L1 , L2 
 from datetime import timedelta,datetime
 from django.utils import timezone
+from spinny_project.settings import A1, V1, L1 , L2
 
 
 def check_validity(user):
+        try:
+            config = Config.objects.get(active = True)
+            A1 = config.average_area
+            V1 = config.average_volume
+            L1 = config.total_boxes
+            L2 = config.total_boxes_user
+
+        except Config.DoesNotExist:
+            pass 
         if Boxes.objects.all().count() == 0 :
             return True
         area = Boxes.objects.all().aggregate(Avg('area'))

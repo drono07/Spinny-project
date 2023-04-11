@@ -1,13 +1,12 @@
-
 from http.client import HTTPResponse
 import imp
 from urllib import response
 from xmlrpc.client import ResponseError
-from .models import Boxes
+from .models import Boxes , Config
 from rest_framework.views import APIView
 from boxes.utils import BoxUtils
-from boxes.serializer import BoxesSerializer,AdminBoxSerializer
-from .filters import BoxFilter
+from boxes.serializer import StaffBoxesSerializer,BoxesSerializer
+from .filters import BoxFilter, MyBoxFilter
 from rest_framework import status,generics
 import django_filters.rest_framework as filters
 from rest_framework.permissions import (IsAuthenticated,
@@ -42,57 +41,68 @@ class CreateBoxView(APIView):
     permission_classes = [IsAuthenticated,]
     def post(self, request, *args, **kwargs):
         user= request.user
-        print("request",request)
-        
         is_valid_user=BoxUpsertValidations.validate_create_box(user)
         if is_valid_user & check_validity(user):
             length = int(request.data.get('length'))
             breadth = int(request.data.get('breadth'))
             height = int(request.data.get('height'))
             box,status = BoxUtils.create_box(length=length, breadth=breadth, height=height, user=user)
-            return Response(BoxesSerializer(box).data)
+            return Response(StaffBoxesSerializer(box).data , status= status)
         if is_valid_user:
             return Response("Box Limit Exceed")
-        return Response("User is Not Staff Member ")
+        return Response("User is Not Staff Member ",status=401)
 
+class CreateConflig(APIView):
+    permission_classes = [IsAuthenticated,]
+    def post(self, request, *args ,**kwargs):
+        user = request.user
+        is_valid_user = BoxUpsertValidations.validate_create_box(user)
+        if is_valid_user:
+            average_area = int(request.data.get('average_area'))
+            average_volume = int(request.data.get('average_volume'))
+            tolal_boxes  = int(request.data.get('total_boxes'))
+            total_boxes_user = int(request.data.get('total_boxes_user'))
+            config = BoxUtils.create_config(average_area = average_area , average_volume= average_volume ,\
+                total_boxes=tolal_boxes, total_boxes_user= total_boxes_user )
+            return Response("Boxes Config Created", status= 200)
+        else:
+            return Response("User is Not Staff Member" , status=401)
         
 class BoxListView(generics.ListAPIView):
-    serializer_class = BoxesSerializer
-    permission_classes = [IsAuthenticated,]
     queryset = Boxes.objects.all()
+    serializer_class = StaffBoxesSerializer
+    permission_classes = [IsAuthenticated,]
     filter_backends = (filters.DjangoFilterBackend,)
     filter_class = BoxFilter
+
+    def get_serializer_class(self):
+        if not self.request.user.is_staff :
+            return BoxesSerializer 
+        return super().get_serializer_class()
 
 class MyBoxListView(generics.ListAPIView):
-    serializer_class = BoxesSerializer
+    serializer_class = StaffBoxesSerializer
     permission_classes = [IsAuthenticated, ]
     filter_backends = (filters.DjangoFilterBackend,)
-    filter_class = BoxFilter
+    filter_class = MyBoxFilter
 
-    def queryset(self, request):
-        return Boxes.objects.filter(created_by=request.user)
-
-    def get(self, request, *args, **kwargs):
-        # print("reqyest",request)
-        # print("user",request.user)
-        is_staff_user = BoxUpsertValidations.validate_my_box_list_request(request.user)
+    def get_queryset(self):
+        is_staff_user = BoxUpsertValidations.validate_my_box_list_request(self.request.user)
+        
         if not is_staff_user:
-            return Response("not a staff member")
-
-        queryset = self.queryset(request=request)
-        # print("qs",queryset)
-        filtered_queryset = self.filter_queryset(queryset)
-        data = self.serializer_class(filtered_queryset, many=True).data
-        return Response(data)
+            return Boxes.objects.none()
+        return Boxes.objects.filter(created_by=self.request.user.username)
     
-
 class BoxDeleteView(APIView):
     permission_classes = [IsAuthenticated,]
     def delete(self, request, *args, **kwargs):
         id = kwargs.get("pk")
-        box=Boxes.objects.filter(id=id)
+        try:
+            box=Boxes.objects.get(id=id)
+        except  Boxes.DoesNotExist:
+            return Response("No Box Exists With This Id {}".format(id))
+    
         is_user_valid=BoxUpsertValidations.validate_delete_box(user=request.user,box=box)
-        print("is_user",is_user_valid)
         if is_user_valid:
             box.delete()
             return Response("Box Deleted")
@@ -107,7 +117,10 @@ class BoxUpdates(APIView):
         length = request.data.get('length')
         breadth= request.data.get('breadth')
         height= request.data.get('height')
-        box=Boxes.objects.get(id=id)
+        try:
+            box=Boxes.objects.get(id=id)
+        except Boxes.DoesNotExist:
+            return Response("Invalid Id",status=400)
         if is_valid_user:
             if length:
                 box.length =length
@@ -119,8 +132,35 @@ class BoxUpdates(APIView):
                 # box.area=area
                 # box.volume=vol
                 box.save()
-                return Response("Succesfully Updated")
-        return response("User is not staff member")
+                return Response("Succesfully Updated",status=200)
+        return response("User is not staff member", status = 401)
+
+class UpdadeConfig(APIView):
+    permission_classes = [IsAuthenticated,]
+    def post(self,request,*args , **kwargs):
+        user= request.user
+        is_valid_user=BoxUpsertValidations.validate_update_box_request(user)
+        average_area = request.data.get('average_area')
+        average_volume= request.data.get('average_volume')
+        total_boxes= request.data.get('total_boxes')
+        total_boxes_user = request.data.get('total_boxes_user')
+        try:
+            config=Config.objects.get(active=True)
+        except Config.DoesNotExist:
+            pass
+        if is_valid_user:
+            if average_area:
+                config.average_area =average_area
+            if average_volume:
+                config.average_volume=average_volume
+            if total_boxes:
+                config.total_boxes =total_boxes
+            if total_boxes_user:
+                config.total_boxes_user = total_boxes_user
+            config.save()
+            return Response("Succesfully Updated",status=200)
+        return response("User is not staff member", status = 401)
+
 
 class BoxUpdateConfigs(APIView):
 
@@ -166,3 +206,6 @@ def login(request):
     token, _ = Token.objects.get_or_create(user=user)
     return Response({'token': token.key},
                     status=HTTP_200_OK)
+
+
+    
