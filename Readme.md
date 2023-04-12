@@ -36,8 +36,8 @@
 }
 </code></pre>
 
-## 3. Create Box-Config API
-# Configuration of Box Before Creation
+# 3. Create Box-Config API
+## Configuration of Box Before Creation
 <pre><code>
 --Request Method POST 'https://spinny-services.onrender.com/boxes/create_config'
 --header 'Authorization: Token 234801022f6bb26fb2f4b424b37555bc5213c571 ' 
@@ -50,6 +50,8 @@
    }
 --Response :
 ----{"Boxes Config Created"} 
+
+</code><pre>
 
 ## 4. Box Listing API using Various filter
 
@@ -126,8 +128,8 @@ Request Method: POST 'https://spinny-services.onrender.com/store/box/update/7'
 --Response: Successfully Updated
 </code></pre>
 
-## 8. Config-Box Updation API For 
-# Updated Configuration of Box before creation 
+# 8. Config-Box Updation API For 
+## Updated Configuration of Box before creation 
 <pre><code>
 --Requies Method: POST 'https://spinny-services.onrender.com/boxes/update_config/2"'
 --header 'Authorization: Token 234801022f6bb26fb2f4b424b37555bc5213c571 ' 
