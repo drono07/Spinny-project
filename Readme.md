@@ -120,7 +120,7 @@ Filters
 <pre><code>
 Request Method: POST 'https://spinny-services.onrender.com/store/box/update/7' 
 --header 'Authorization: Token 234801022f6bb26fb2f4b424b37555bc5213c571 ' 
---data-form-data '{
+--data-raw in Body '{
     "length":10,
     "width":3,
     "height":1
@@ -133,5 +133,9 @@ Request Method: POST 'https://spinny-services.onrender.com/store/box/update/7'
 <pre><code>
 --Requies Method: POST 'https://spinny-services.onrender.com/boxes/update_config/2"'
 --header 'Authorization: Token 234801022f6bb26fb2f4b424b37555bc5213c571 ' 
+--data-raw in Body'{
+   "average_area": 1000,
+   "average_volume": 5000,
+}'
 --Response : "Succesfully Updated"
 <code></pre>
