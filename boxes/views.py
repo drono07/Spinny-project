@@ -138,6 +138,7 @@ class BoxUpdates(APIView):
 class UpdadeConfig(APIView):
     permission_classes = [IsAuthenticated,]
     def post(self,request,*args , **kwargs):
+        id = kwargs.get("pk")
         user= request.user
         is_valid_user=BoxUpsertValidations.validate_update_box_request(user)
         average_area = request.data.get('average_area')
@@ -145,9 +146,9 @@ class UpdadeConfig(APIView):
         total_boxes= request.data.get('total_boxes')
         total_boxes_user = request.data.get('total_boxes_user')
         try:
-            config=Config.objects.get(active=True)
+            config=Config.objects.get(id=id)
         except Config.DoesNotExist:
-            pass
+            return Response("User Id is not Valid")
         if is_valid_user:
             if average_area:
                 config.average_area =average_area
@@ -157,6 +158,8 @@ class UpdadeConfig(APIView):
                 config.total_boxes =total_boxes
             if total_boxes_user:
                 config.total_boxes_user = total_boxes_user
+            Config.objects.filter(active=True).update(active = False)
+            config.active = True
             config.save()
             return Response("Succesfully Updated",status=200)
         return response("User is not staff member", status = 401)
