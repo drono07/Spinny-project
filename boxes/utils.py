@@ -26,4 +26,4 @@ class BoxUtils:
             active = True
         )
         config.save()
-        return config,"Success"
+        return config
