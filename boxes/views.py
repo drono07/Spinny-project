@@ -145,10 +145,11 @@ class UpdadeConfig(APIView):
         average_volume= request.data.get('average_volume')
         total_boxes= request.data.get('total_boxes')
         total_boxes_user = request.data.get('total_boxes_user')
+        active = request.data.get('active')
         try:
             config=Config.objects.get(id=id)
         except Config.DoesNotExist:
-            return Response("User Id is not Valid")
+            return Response("Conflig Id is not Valid",status= 400)
         if is_valid_user:
             if average_area:
                 config.average_area =average_area
@@ -158,8 +159,9 @@ class UpdadeConfig(APIView):
                 config.total_boxes =total_boxes
             if total_boxes_user:
                 config.total_boxes_user = total_boxes_user
-            Config.objects.filter(active=True).update(active = False)
-            config.active = True
+            if active: 
+                Config.objects.filter(active=True).update(active = False)
+                config.active = True
             config.save()
             return Response("Succesfully Updated",status=200)
         return response("User is not staff member", status = 401)
